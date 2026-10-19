@@ -1,0 +1,2476 @@
+@charset "UTF-8";
+/* =========================================================================
+   BT WELD FAB 500HD — landing page
+   Ports to the child theme unchanged. Mobile-first. Two breakpoints only.
+   ========================================================================= */
+
+@font-face {
+  font-family: "Microgramma D";
+  src: url("../fonts/MicrogrammaD-BoldExte.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ---- Palette (pinned by brief) ---------------------------------- */
+  --bt-black:          #000000;
+  --bt-charcoal-dark:  #1C1C1C;
+  --bt-charcoal:       #2D2D2D;
+  --bt-green:          #0bc229;   /* design system brand green, overrides the brief's #3E8C3A */
+  --bt-silver:         #C0C0C0;
+  --bt-white:          #FFFFFF;
+  /* Arc orange is imagery-only. Declared for reference; never used in UI. */
+  --bt-orange:         #FF6600;
+
+  /* Derived, for states only — no new hues introduced. */
+  --bt-green-lift:     #3ad952;   /* brightens on hover — this page is dark */
+  --bt-green-press:    #09a423;   /* design system --bt-green-hover, used here as pressed */
+  --bt-hairline:       #3A3A3A;
+
+  /* ---- Type -------------------------------------------------------- */
+  --bt-font-display: "Microgramma D", "Eurostile", "Arial Black", system-ui, sans-serif;
+  --bt-font-body:    "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bt-font-mono:    ui-monospace, "SFMono-Regular", "Cascadia Mono", Menlo, monospace;
+
+  /* Fit coefficients measured from the real advance widths of this face.
+     H1 binding line "THE WORKSHOP" = 10.74em -> 100/10.74 = 9.31cqw
+     H2 binding word "PRODUCTION."  =  9.02em -> 100/9.02  = 11.09cqw  */
+  --bt-h1-coeff: 9.00cqw;
+  --bt-h2-coeff: 9.10cqw;
+
+  /* ---- Space ------------------------------------------------------- */
+  --bt-space-4:   4px;
+  --bt-space-8:   8px;
+  --bt-space-16: 16px;
+  --bt-space-24: 24px;
+  --bt-space-32: 32px;
+  --bt-space-48: 48px;
+  --bt-space-64: 64px;
+  --bt-space-96: 96px;
+  --bt-space-128: 128px;
+
+  --bt-gutter: var(--bt-space-24);
+  --bt-section-y: var(--bt-space-96);
+  --bt-max: 1280px;
+
+  /* ---- Radius ------------------------------------------------------ */
+  --bt-radius-card: 4px;
+  --bt-radius-btn: 50px;         /* design system pill — overrides the brief's 2px */
+
+  /* Must track the rendered bar: 12px pad + 58px button + 12px pad. It only
+     reserves space under the mobile layout, and it was 14px short of the real
+     height for as long as the bar never actually floated. */
+  --bt-sticky-h: 82px;
+  /* The fixed masthead, so anchor targets can clear it. Measured, not
+     guessed: 16px pad + the ghost button's own height + 16px pad. */
+  --bt-header-h: 72px;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --bt-gutter: var(--bt-space-48);
+    --bt-section-y: var(--bt-space-128);
+  }
+}
+
+/* =========================================================================
+   Base
+   ========================================================================= */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: var(--bt-black);
+  color: var(--bt-white);
+  font-family: var(--bt-font-body);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  padding-bottom: calc(var(--bt-sticky-h) + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 768px) {
+  body { font-size: 1.125rem; padding-bottom: 0; }
+  :root { --bt-header-h: 76px; }
+}
+
+img, video, svg { display: block; max-width: 100%; }
+
+/* Browser surfaces — themed, not left to the UA. */
+::selection { background: var(--bt-green); color: var(--bt-black); }
+input, textarea, select { caret-color: var(--bt-green); }
+* { scrollbar-color: var(--bt-charcoal) var(--bt-black); scrollbar-width: thin; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: var(--bt-black); }
+*::-webkit-scrollbar-thumb { background: var(--bt-charcoal); border-radius: 0; }
+*::-webkit-scrollbar-thumb:hover { background: #3c3c3c; }
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--bt-green);
+  outline-offset: 2px;
+}
+
+a { color: var(--bt-green); text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+
+/* =========================================================================
+   Type
+   ========================================================================= */
+
+.bt-display,
+.bt-h2,
+.bt-card-h {
+  font-family: var(--bt-font-display);
+  font-weight: 700;              /* the face ships one weight; 800 resolves here */
+  text-transform: uppercase;
+  letter-spacing: 0;             /* extended face — negative tracking collides counters */
+  margin: 0;
+}
+
+.bt-fit,
+.bt-mp__copy,
+.bt-hero__copy,
+.bt-split__copy,
+.bt-demo__copy { container-type: inline-size; }
+
+.bt-display {
+  font-size: min(5.5rem, var(--bt-h1-coeff));
+  line-height: 0.96;
+}
+
+.bt-h2 {
+  font-size: min(3.5rem, var(--bt-h2-coeff));
+  line-height: 1.02;
+}
+
+.bt-card-h {
+  font-size: 1.125rem;
+  line-height: 1.15;
+  text-transform: none;
+}
+
+@media (min-width: 1024px) { .bt-card-h { font-size: 1.375rem; } }
+
+.bt-accent { color: var(--bt-green); }
+
+.bt-eyebrow {
+  font-family: var(--bt-font-body);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bt-silver);
+  margin: 0 0 var(--bt-space-24);
+}
+
+.bt-body { max-width: 65ch; margin: 0; }
+.bt-body--center { margin-inline: auto; }
+
+.bt-figure {
+  font-family: var(--bt-font-display);
+  font-weight: 700;
+  color: var(--bt-green);
+  /* same 3.5rem ceiling as .bt-h2 so the figures sit in the page's title
+     scale instead of out-shouting it; 22cqw keeps the widest figure
+     ("5 Year", 4.06em) inside its own cell at every column count */
+  font-size: min(3.5rem, 22cqw);
+  line-height: 1.02;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+
+.bt-label {
+  font-family: var(--bt-font-body);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bt-silver);
+  margin: var(--bt-space-8) 0 0;
+}
+
+/* =========================================================================
+   Layout
+   ========================================================================= */
+
+.bt-wrap {
+  width: 100%;
+  max-width: var(--bt-max);
+  margin-inline: auto;
+  padding-inline: var(--bt-gutter);
+}
+
+.bt-section { padding-block: var(--bt-section-y); }
+.bt-section--dark { background: var(--bt-charcoal-dark); }
+.bt-band { padding: 0; }
+
+.bt-skip {
+  position: absolute; left: -9999px; top: 0; z-index: 400;
+  background: var(--bt-green); color: var(--bt-black);
+  padding: var(--bt-space-8) var(--bt-space-16); font-weight: 700;
+}
+.bt-skip:focus { left: var(--bt-space-8); top: var(--bt-space-8); }
+
+/* =========================================================================
+   Buttons
+   ========================================================================= */
+
+.bt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--bt-space-8);
+  font-family: var(--bt-font-body);
+  font-weight: 700;
+  font-size: 1.125rem;
+  letter-spacing: 0.025em;
+  line-height: 1.4;
+  padding: 14px var(--bt-space-32);
+  border: 2px solid var(--bt-green);
+  border-radius: var(--bt-radius-btn);
+  background: var(--bt-green);
+  color: var(--bt-black);          /* 5.02:1 — white on this green is 4.19:1 and fails */
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
+}
+
+.bt-btn:hover { background: var(--bt-green-lift); border-color: var(--bt-green-lift); }
+.bt-btn:active { background: var(--bt-green-press); border-color: var(--bt-green-press); transform: translateY(1px); }
+.bt-btn[disabled], .bt-btn[aria-disabled="true"] { opacity: 0.45; pointer-events: none; }
+
+.bt-btn--ghost {
+  background: transparent;
+  color: var(--bt-green);
+  border-color: var(--bt-green);
+}
+.bt-btn--ghost:hover { background: rgba(11, 194, 41, 0.14); color: var(--bt-green-lift); }
+
+.bt-btn--block { width: 100%; }
+
+/* Quiet secondary link — underline only, never a border or fill. */
+.bt-textlink {
+  font-family: var(--bt-font-body);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--bt-silver);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+.bt-textlink:hover { color: var(--bt-white); }
+
+/* =========================================================================
+   Asset placeholder — brief convention when an asset is not yet supplied
+   ========================================================================= */
+
+.bt-ph {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--ratio, 16 / 9);
+  background: var(--bt-charcoal);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.bt-ph::before {
+  content: "";
+  position: absolute;
+  inset: var(--bt-space-8);
+  border: 1px solid rgba(192, 192, 192, 0.14);
+}
+
+.bt-ph__name {
+  font-family: var(--bt-font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  color: var(--bt-silver);
+  text-align: center;
+  padding: var(--bt-space-8);
+  position: relative;
+}
+
+.bt-ph__name::after {
+  content: attr(data-ratio);
+  display: block;
+  color: #6f6f6f;
+  margin-top: 4px;
+}
+
+/* =========================================================================
+   1 — Hero
+   ========================================================================= */
+
+.bt-hero {
+  position: relative;
+  min-height: 640px;
+  height: 100svh;
+  max-height: 900px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;   /* lower third: copy sits at the base */
+  overflow: hidden;
+  background: var(--bt-black);
+}
+
+.bt-hero__media { position: absolute; inset: 0; z-index: 0; }
+.bt-hero__media .bt-ph { height: 100%; aspect-ratio: auto; }
+.bt-hero__media video,
+.bt-hero__media img { width: 100%; height: 100%; object-fit: cover; }
+
+/* the hero video sits directly in the band, not inside .bt-hero__media */
+.bt-hero__video {
+  position: absolute; inset: 0; z-index: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  background: var(--bt-black);   /* never a white flash before the poster lands */
+}
+
+/* Lower third: the scrim is a single bottom-up ramp, so the upper two
+   thirds of the footage are completely undimmed. Depth is tuned to the
+   band the headline actually occupies, not to the whole frame. */
+.bt-hero__scrim {
+  position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(to top,
+    rgba(0,0,0,0.95) 0%,
+    rgba(0,0,0,0.93) 32%,
+    rgba(0,0,0,0.88) 52%,
+    rgba(0,0,0,0.60) 66%,
+    rgba(0,0,0,0.18) 78%,
+    rgba(0,0,0,0) 90%);
+}
+
+/* Mobile gives the footage its own band instead of running it full-bleed
+   under the type. Scrimming a full frame was the wrong fix for the wrong
+   problem: it dims the subject to make room for the headline, and the
+   headline still lands on the middle of the shot — the part worth seeing.
+   A band lets the welder be seen whole and puts the copy on clean ground
+   underneath it. One token drives the band and its fade so they cannot
+   drift apart. */
+@media (max-width: 1023.98px) {
+  .bt-hero {
+    --bt-hero-band: max(46svh, 260px);
+    height: auto;
+    max-height: none;
+    min-height: 0;
+  }
+
+  .bt-hero__media {
+    position: relative;
+    inset: auto;
+    height: var(--bt-hero-band);
+  }
+
+  /* Two ramps, both local to the band. The foot dissolves into the page.
+     The head is the masthead's ground: with the full-frame scrim gone the
+     bar sat on raw footage, and across the clip the green phone button
+     measured 1.0:1 and the wordmark 1.01:1 — both invisible on the bright
+     frames. 0.84 at the top is what the green needs to clear 3:1 against a
+     blown-out backdrop; the white wordmark needs far less. */
+  .bt-hero__scrim {
+    inset: 0 0 auto 0;
+    height: var(--bt-hero-band);
+    background:
+      linear-gradient(to bottom,
+        rgba(0, 0, 0, 0.86) 0%,
+        rgba(0, 0, 0, 0.82) 52%,
+        rgba(0, 0, 0, 0.34) 82%,
+        rgba(0, 0, 0, 0) 100%)
+        0 0 / 100% calc(var(--bt-header-h) + var(--bt-space-32)) no-repeat,
+      linear-gradient(to top,
+        var(--bt-black) 0%,
+        rgba(0, 0, 0, 0.72) 9%,
+        rgba(0, 0, 0, 0.30) 22%,
+        rgba(0, 0, 0, 0.07) 34%,
+        rgba(0, 0, 0, 0) 46%);
+  }
+}
+
+.bt-hero__inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  text-align: center;
+  /* must clear the trust bar, which is absolutely positioned at the band's
+     base: 3 stacked rows on mobile, a single row from 768up */
+  padding-block: var(--bt-space-32) calc(var(--bt-space-128) + var(--bt-space-32));
+}
+
+@media (min-width: 768px) {
+  .bt-hero__inner { padding-block: var(--bt-space-32) calc(var(--bt-space-96) + var(--bt-space-16)); }
+}
+
+.bt-hero__copy { max-width: 42ch; margin-inline: auto; }
+.bt-hero .bt-display { margin-bottom: var(--bt-space-24); }
+.bt-hero__sub { color: var(--bt-silver); margin: 0 auto var(--bt-space-32); max-width: 48ch; }
+
+/* Stacked on mobile, so both controls take the column's full width — two
+   different pill widths centred under centred copy read as an accident.
+   The row layout at 1024up re-centres them to their own content. */
+.bt-hero__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--bt-space-24);
+}
+
+@media (min-width: 1024px) {
+  /* Centred, as on the phone. max-width stays off the copy: it is the
+     container query root the H1 sizes against (9cqw), so capping its
+     measure here would shrink the headline instead of centring it. */
+  .bt-hero__copy { max-width: none; }
+  .bt-hero__actions {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: var(--bt-space-32);
+  }
+}
+
+/* Trust strip pinned to the bottom of the hero band */
+.bt-trust {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 3;
+  background: var(--bt-charcoal);
+  border-top: 1px solid var(--bt-hairline);
+}
+
+.bt-trust__list {
+  list-style: none;
+  margin: 0 auto;
+  padding: var(--bt-space-16) var(--bt-gutter);
+  max-width: var(--bt-max);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--bt-space-12, 12px);
+}
+
+.bt-trust__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bt-space-8);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bt-silver);
+}
+
+.bt-trust__icon { width: 20px; height: 18px; fill: var(--bt-green); flex: none; }
+
+/* Partner wordmarks. Sized by optical weight, not bounding box: the
+   Dynaweld mark is solid caps filling its full box, Welding Evolved is a
+   lowercase script using maybe 60% of its own, so matching box heights
+   would leave the script looking undersized. */
+.bt-trust__logo { display: block; width: auto; flex: none; }
+.bt-trust__logo--dyna { height: 15px; }
+.bt-trust__logo--we   { height: 21px; }
+
+@media (min-width: 768px) {
+  .bt-trust__logo--dyna { height: 17px; }
+  .bt-trust__logo--we   { height: 23px; }
+}
+
+@media (min-width: 768px) {
+  .bt-trust__list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--bt-space-16) 0;
+  }
+  .bt-trust__item { font-size: 0.75rem; }
+  .bt-trust__item + .bt-trust__item::before {
+    content: "";
+    width: 5px; height: 5px;
+    background: var(--bt-green);
+    margin-inline: var(--bt-space-24);
+    flex: none;
+  }
+}
+
+/* =========================================================================
+   2 — Proof bar
+   ========================================================================= */
+
+.bt-proof { background: var(--bt-black); padding-block: var(--bt-space-48); }
+
+.bt-proof__cell { container-type: inline-size; }
+
+/* Three cells in a two-column grid leaves the last one orphaned beside dead
+   space. Centre it, but hold it to a half-column width so its container
+   query still resolves to the same figure size as its peers. */
+.bt-proof__grid > .bt-proof__cell:last-child {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: calc((100% - var(--bt-space-16)) / 2);
+}
+
+@media (min-width: 1024px) {
+  .bt-proof__grid > .bt-proof__cell:last-child { grid-column: auto; width: auto; justify-self: stretch; }
+}
+
+.bt-proof__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--bt-space-32) var(--bt-space-16);
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .bt-proof__grid { grid-template-columns: repeat(3, 1fr); gap: 0; }
+  .bt-proof__cell + .bt-proof__cell { border-left: 1px solid var(--bt-green); }
+}
+
+/* =========================================================================
+   3 — Multi-process
+   A layered stage: video bleeding off the right margin, the product cut-out
+   over it, and a rail of processes that advances as the section is pinned.
+   ========================================================================= */
+
+.bt-mp { position: relative; background: var(--bt-charcoal-dark); }
+
+.bt-mp__pin {
+  position: relative;
+  padding-block: var(--bt-section-y);
+  overflow: hidden;
+}
+
+.bt-mp__stage { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+
+.bt-mp__video { position: absolute; inset: 0; overflow: hidden; }
+.bt-mp__vid { width: 100%; height: 100%; object-fit: cover; background: var(--bt-black); }
+.bt-mp__vscrim {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(28,28,28,0.96) 0%, rgba(28,28,28,0.72) 46%, rgba(28,28,28,0.55) 100%);
+}
+
+.bt-mp__layer { position: absolute; }
+.bt-mp__product {
+  display: block;
+  width: auto;
+  height: 100%;
+  filter: drop-shadow(0 28px 48px rgba(0, 0, 0, 0.6));
+}
+
+/* arc-glow field: the light the machine sits in */
+.bt-mp__glow {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(closest-side,
+    rgba(11, 194, 41, 0.30) 0%,
+    rgba(11, 194, 41, 0.12) 42%,
+    rgba(11, 194, 41, 0) 72%);
+  opacity: 0;
+}
+.bt-mp[data-boot="done"] .bt-mp__glow,
+.bt-mp:not([data-boot]) .bt-mp__glow { opacity: 0.55; }
+.bt-mp[data-inview] .bt-mp__glow {
+  animation: bt-glow-breathe 7s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+@keyframes bt-glow-breathe {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50%      { opacity: 0.9;  transform: scale(1.07); }
+}
+
+.bt-mp__inner { position: relative; z-index: 2; }
+
+/* =========================================================================
+   Power-on. The section arrives cold and the machine comes up: the stage
+   lifts out of black, an arc sweeps the full width, the cut-out rises into
+   its light, then the processes boot in sequence and the first one strikes.
+   Only ever runs once, and only when JS has armed it — with no script the
+   section is simply there, fully lit.
+   ========================================================================= */
+
+.bt-mp[data-boot="pending"] .bt-mp__vscrim { opacity: 1; }
+.bt-mp[data-boot="pending"] .bt-mp__layer,
+.bt-mp[data-boot="pending"] .bt-mp__glow,
+.bt-mp[data-boot="pending"] .bt-rail__card { opacity: 0; }
+
+@keyframes bt-boot-stage {
+  from { opacity: 1; filter: brightness(0.25) saturate(0.4); }
+  to   { opacity: 1; filter: none; }
+}
+@keyframes bt-boot-rise {
+  from { opacity: 0; transform: translate3d(0, 34px, 0) scale(1.035); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes bt-boot-card {
+  from { opacity: 0; transform: translate3d(-18px, 0, 0); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes bt-boot-glow {
+  from { opacity: 0; transform: scale(0.6); }
+  to   { opacity: 0.55; transform: scale(1); }
+}
+
+.bt-mp[data-boot="running"] .bt-mp__vid     { animation: bt-boot-stage 900ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.bt-mp[data-boot="running"] .bt-mp__layer   { animation: bt-boot-rise 860ms cubic-bezier(0.16, 1, 0.3, 1) 180ms both; }
+.bt-mp[data-boot="running"] .bt-mp__glow    { animation: bt-boot-glow 900ms cubic-bezier(0.16, 1, 0.3, 1) 240ms both; }
+.bt-mp[data-boot="running"] .bt-rail__card  { animation: bt-boot-card 520ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* staggered boot, total delay capped so it never feels like a queue */
+.bt-mp[data-boot="running"] .bt-rail__card:nth-child(1) { animation-delay: 420ms; }
+.bt-mp[data-boot="running"] .bt-rail__card:nth-child(2) { animation-delay: 480ms; }
+.bt-mp[data-boot="running"] .bt-rail__card:nth-child(3) { animation-delay: 540ms; }
+.bt-mp[data-boot="running"] .bt-rail__card:nth-child(4) { animation-delay: 600ms; }
+.bt-mp[data-boot="running"] .bt-rail__card:nth-child(5) { animation-delay: 650ms; }
+.bt-mp[data-boot="running"] .bt-rail__card:nth-child(6) { animation-delay: 690ms; }
+
+/* the accent line catches the arc as it passes */
+@keyframes bt-boot-ignite {
+  0%   { text-shadow: none; }
+  40%  { text-shadow: 0 0 26px rgba(11,194,41,0.85), 0 0 60px rgba(11,194,41,0.45); }
+  100% { text-shadow: none; }
+}
+.bt-mp[data-boot="running"] .bt-mp__copy .bt-accent {
+  animation: bt-boot-ignite 1000ms ease-out 240ms;
+}
+
+/* the engaged process throws light */
+.bt-rail__card.is-active {
+  box-shadow: inset 0 0 0 1px rgba(11, 194, 41, 0.55),
+              0 0 36px -6px rgba(11, 194, 41, 0.45);
+}
+.bt-mp__copy .bt-h2 { margin-bottom: var(--bt-space-24); }
+.bt-mp__body { color: var(--bt-silver); }
+
+/* ---- mobile: stacked, no pinning ------------------------------------- */
+.bt-mp__video { height: 42%; bottom: auto; }
+.bt-mp__layer { display: none; }   /* the render is desktop-only */
+.bt-mp__glow { right: -6%; top: -6%; width: 62%; aspect-ratio: 1; }
+.bt-mp__copy { padding-top: 32vw; }
+
+/* ---- the rail --------------------------------------------------------- */
+.bt-rail { margin-top: var(--bt-space-32); position: relative; }
+
+/* ---- the bead, laid flat ----------------------------------------------
+   Mobile has no room for the vertical seam beside the cards, so the same
+   weld runs left to right along the foot of the stack instead. Sticky, and
+   held clear of the booking bar, so it stays visible for the whole run and
+   doubles as the position indicator the carousel never had.
+   Driven by --laid (0-1); scaleX and translate only. */
+
+/* The pin's own overflow:hidden made it the sticky scroll container, so the
+   bar below could never stick to the viewport. The clip belongs on the stage
+   regardless — the video and the glow are the only things that overflow, and
+   the copy column has no business being clipped by them. */
+@media (max-width: 1023.98px) {
+  .bt-mp__pin { overflow: visible; }
+  .bt-mp__stage { overflow: hidden; }
+
+  /* ---- mobile pinning -------------------------------------------------
+     The video is no longer part of the pinned frame. It is a band in normal
+     flow at the head of the pin, and the pin sticks at minus its height —
+     so the footage scrolls away on the way in and the headline is what holds
+     at the top while the processes run past. Keeping the band pinned pushed
+     the rail into the bottom third and made the cards the hardest thing on
+     the screen to read.
+
+     svh, not vh: mobile browser chrome would otherwise push the foot of the
+     composition under the fold. */
+  .bt-mp { --bt-mp-vid-h: 40svh; }
+
+  .bt-mp[data-pinned] {
+    height: calc(100svh + var(--bt-mp-vid-h) + var(--bt-mp-runway-m, 160vh));
+  }
+
+  .bt-mp[data-pinned] .bt-mp__pin {
+    position: sticky;
+    top: calc(-1 * var(--bt-mp-vid-h));   /* the band rides up out of frame */
+    height: calc(100svh + var(--bt-mp-vid-h));
+    padding-block: 0 var(--bt-space-16);
+  }
+
+  /* the stage stops being an overlay and becomes the band itself */
+  .bt-mp[data-pinned] .bt-mp__stage {
+    position: relative;
+    inset: auto;
+    height: var(--bt-mp-vid-h);
+  }
+  .bt-mp[data-pinned] .bt-mp__video { position: absolute; inset: 0; height: auto; }
+
+  /* nothing reads over the footage now, so the scrim only has to dissolve
+     the band's foot into the page — the rest of the frame stays clear */
+  .bt-mp[data-pinned] .bt-mp__vscrim {
+    background: linear-gradient(to top,
+      var(--bt-charcoal-dark) 0%,
+      rgba(28, 28, 28, 0.72) 10%,
+      rgba(28, 28, 28, 0.28) 24%,
+      rgba(28, 28, 28, 0.06) 36%,
+      rgba(28, 28, 28, 0) 48%);
+  }
+
+  /* clears the fixed masthead, which still floats over the pinned frame */
+  .bt-mp[data-pinned] .bt-mp__copy {
+    padding-top: calc(var(--bt-header-h) + var(--bt-space-24));
+  }
+
+  .bt-mp[data-pinned] .bt-rail { margin-top: var(--bt-space-24); }
+
+  .bt-mp[data-pinned] .bt-rail__viewport {
+    overflow: hidden;
+    height: var(--bt-rail-h, clamp(240px, 34svh, 330px));
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 13%, #000 80%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 13%, #000 80%, transparent 100%);
+  }
+
+  .bt-mp[data-pinned] .bt-rail__list { will-change: transform; }
+  .bt-mp[data-pinned] .bt-rail__card { will-change: transform, opacity, filter; }
+
+  /* The flat bead keeps its job as the position indicator, but it stops
+     being sticky: inside a pinned composition it is already held in view.
+     relative, never static — the bead and head inside it are absolutely
+     positioned, and static would hand them .bt-rail as a containing block,
+     which paints the bead as a full-height column across the cards. */
+  .bt-mp[data-pinned] .bt-seam-h { position: relative; bottom: auto; margin-top: var(--bt-space-24); }
+}
+
+.bt-seam-h {
+  position: sticky;
+  bottom: calc(var(--bt-sticky-h) + var(--bt-space-12, 12px));
+  z-index: 3;
+  margin-top: var(--bt-space-32);
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(192, 192, 192, 0.16);
+}
+
+.bt-seam-h__bead {
+  position: absolute;
+  inset: 0;
+  border-radius: 2px;
+  transform-origin: left center;
+  transform: scaleX(var(--laid, 0));
+  background: linear-gradient(to right, #14301a 0%, var(--bt-green) 45%, #8dffa8 100%);
+}
+
+/* the molten head, still ahead of what it has laid */
+.bt-seam-h__head {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--laid, 0) * 100%);
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 10px 2px rgba(217, 255, 227, 0.9),
+              0 0 22px 7px rgba(11, 194, 41, 0.6);
+}
+
+/* ---- the weld seam ----------------------------------------------------
+   The processes are plates being joined. A molten head travels down the
+   seam as the section is scrolled, laying a bead behind it that cools from
+   white through green to dead. The turbulence filter keeps the bead
+   irregular, so it reads as weld rather than as a progress track.
+   Hangs into the gutter so the cards stay aligned with the heading. */
+
+.bt-seam {
+  position: absolute;
+  left: -18px;
+  top: 0;
+  width: 20px;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 1;
+  display: none;            /* desktop composition only */
+}
+
+.bt-seam__track {
+  stroke: rgba(192, 192, 192, 0.14);
+  stroke-width: 1;
+}
+
+.bt-seam__bead {
+  stroke: url(#btBeadHeat);
+  stroke-width: 4.2;
+  stroke-linecap: round;
+  stroke-dasharray: 2.6 2.2;   /* stacked-dimes ripple of a real bead */
+}
+
+.bt-seam__halo {
+  fill: var(--bt-green);
+  opacity: 0.22;
+  filter: blur(5px);
+}
+
+.bt-seam__core {
+  fill: #ffffff;
+  filter: drop-shadow(0 0 7px rgba(217, 255, 227, 0.95))
+          drop-shadow(0 0 18px rgba(11, 194, 41, 0.8));
+}
+
+/* the arc never burns perfectly steady */
+@keyframes bt-arc-flicker {
+  0%, 100% { opacity: 0.22; transform: scale(1); }
+  38%      { opacity: 0.38; transform: scale(1.14); }
+  61%      { opacity: 0.18; transform: scale(0.95); }
+}
+.bt-mp[data-inview] .bt-seam__halo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: bt-arc-flicker 1.5s ease-in-out infinite;
+}
+
+/* ---- spatter ----------------------------------------------------------
+   Every short scroll throws a spark off the bead. The glow reaches well
+   past the seam into the black so the light belongs to the section, not
+   to a 20px strip. Four nodes cycled round-robin so bursts can overlap. */
+
+.bt-sparks {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.bt-spark {
+  position: absolute;
+  display: none;            /* desktop composition only, like the seam */
+  width: 560px;
+  height: 560px;
+  margin: -280px 0 0 -280px;
+  border-radius: 50%;
+  opacity: 0;
+  background: radial-gradient(closest-side,
+    rgba(217, 255, 227, 0.50) 0%,
+    rgba(11, 194, 41, 0.30) 16%,
+    rgba(11, 194, 41, 0.11) 44%,
+    rgba(11, 194, 41, 0.03) 64%,
+    transparent 76%);
+}
+
+@keyframes bt-spark-burst {
+  0%   { opacity: 0;    transform: scale(0.16); }
+  9%   { opacity: 1; }
+  100% { opacity: 0;    transform: scale(1.3); }
+}
+
+.bt-spark.is-on {
+  animation: bt-spark-burst var(--spark-dur, 780ms) cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+/* ---- the weld completes ------------------------------------------------
+   Reaching the last process finishes the seam: the whole bead flares once,
+   top to bottom, then holds. The story resolves and the CTA is the payoff. */
+
+.bt-seam__flare {
+  stroke: #ffffff;
+  stroke-width: 5;
+  stroke-linecap: round;
+  opacity: 0;
+  filter: drop-shadow(0 0 10px rgba(217, 255, 227, 0.95))
+          drop-shadow(0 0 26px rgba(11, 194, 41, 0.85));
+}
+
+@keyframes bt-seam-complete {
+  0%   { opacity: 0; }
+  10%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.bt-mp.is-resolved .bt-seam__flare {
+  animation: bt-seam-complete 760ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* a card engaging kicks the arc */
+@keyframes bt-arc-kick {
+  0%   { transform: scale(1); }
+  22%  { transform: scale(1.9); }
+  100% { transform: scale(1); }
+}
+.bt-seam.is-kick .bt-seam__core {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: bt-arc-kick 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Mobile used to be a horizontal snap carousel, which nobody swiped: with a
+   hidden scrollbar, no dots and a thumb already moving vertically, processes
+   02-05 were effectively unreachable. The stack now runs down the page and
+   advances with the ordinary scroll. */
+.bt-rail__viewport {
+  display: block;
+  /* floating cards: no scrollbar anywhere */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.bt-rail__viewport::-webkit-scrollbar { width: 0; height: 0; display: none; }
+.bt-rail__viewport:focus-visible { outline: 2px solid var(--bt-green); outline-offset: 6px; }
+
+.bt-rail__list { display: flex; flex-direction: column; gap: var(--bt-space-24); }
+.bt-rail__card { flex: 0 0 auto; }
+
+.bt-rail__card {
+  position: relative;
+  /* Presence falls off faster than content. The card's own opacity fades
+     everything together, which left a departing plate reading as a grey
+     rectangle with a hard bottom edge sliding past the plate-less CTA.
+     --plate is driven on a steeper curve, so a card leaving focus becomes
+     floating type rather than a box. Left off the transition deliberately:
+     it changes every frame and a 260ms ease would smear behind the scroll. */
+  --plate: 1;
+  background: rgba(45, 45, 45, calc(0.80 * var(--plate)));
+  border-radius: var(--bt-radius-card);
+  padding: var(--bt-space-16) var(--bt-space-24) var(--bt-space-24);
+  box-shadow: inset 0 0 0 1px rgba(192, 192, 192, calc(0.12 * var(--plate)));
+  transform-origin: left center;
+  transition: box-shadow 260ms ease;
+}
+
+/* only the engaged card pays for a backdrop blur, and the toggle happens
+   once per process change rather than every frame */
+.bt-rail__card.is-active {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.bt-rail__idx {
+  display: flex;
+  align-items: center;
+  font-family: var(--bt-font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  color: var(--bt-silver);
+  margin-bottom: var(--bt-space-12, 12px);
+  font-variant-numeric: tabular-nums;
+  transition: color 260ms ease;
+}
+
+.bt-rail__name {
+  font-family: var(--bt-font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 1rem;
+  line-height: 1.15;
+  margin: 0 0 var(--bt-space-12, 12px);
+  color: var(--bt-white);
+}
+
+.bt-rail__cap { font-size: 0.9375rem; line-height: 1.5; color: var(--bt-silver); margin: 0; }
+
+.bt-rail__card.is-active {
+  background: rgba(45, 45, 45, 0.94);
+  box-shadow: inset 0 0 0 1px rgba(11, 194, 41, 0.55);
+}
+.bt-rail__card.is-active .bt-rail__idx { color: var(--bt-green); }
+
+/* ---- mode engage: the machine's own panel language --------------------
+   An arc strikes hot and settles. The LED does the same: fast attack,
+   bloom, then a steady burn for as long as the process is engaged. */
+
+.bt-rail__led {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  margin-right: 10px;
+  background: #242424;
+  box-shadow: inset 0 0 0 1px rgba(192, 192, 192, 0.28);
+  transition: background 300ms ease, box-shadow 300ms ease;
+}
+
+.bt-rail__card.is-active .bt-rail__led {
+  background: var(--bt-green);
+  box-shadow: 0 0 10px 1px rgba(11, 194, 41, 0.75),
+              inset 0 0 0 1px rgba(11, 194, 41, 0.95);
+}
+
+/* the strike itself: a current running down the card's leading edge */
+.bt-rail__card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8%;
+  bottom: 8%;
+  width: 2px;
+  border-radius: 2px;
+  background: linear-gradient(to bottom, transparent, var(--bt-green) 22%, #d9ffe3 50%, var(--bt-green) 78%, transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes bt-strike {
+  0%   { opacity: 0; transform: scaleY(0.12); }
+  16%  { opacity: 1; transform: scaleY(1); }
+  52%  { opacity: 0.85; }
+  100% { opacity: 0; transform: scaleY(1); }
+}
+
+@keyframes bt-led-strike {
+  0%   { box-shadow: inset 0 0 0 1px rgba(192,192,192,0.28); background: #242424; }
+  12%  { box-shadow: 0 0 22px 5px rgba(217,255,227,0.95), inset 0 0 0 1px #d9ffe3; background: #d9ffe3; }
+  100% { box-shadow: 0 0 10px 1px rgba(11,194,41,0.75), inset 0 0 0 1px rgba(11,194,41,0.95); background: var(--bt-green); }
+}
+
+.bt-rail__card.is-striking::before { animation: bt-strike 560ms cubic-bezier(0.16, 1, 0.3, 1); }
+.bt-rail__card.is-striking .bt-rail__led { animation: bt-led-strike 560ms cubic-bezier(0.16, 1, 0.3, 1); }
+
+.bt-rail__card--cta .bt-btn { position: relative; }
+
+/* it keeps inviting once the weld is done, rather than landing and dying */
+@keyframes bt-cta-breathe {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(11, 194, 41, 0); }
+  50%      { box-shadow: 0 0 38px 2px rgba(11, 194, 41, 0.55); }
+}
+
+@keyframes bt-cta-land {
+  from { transform: scale(0.92); opacity: 0.4; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.bt-rail__card--cta.is-forged .bt-btn {
+  animation: bt-cta-emerge-btn 460ms cubic-bezier(0.16, 1, 0.3, 1) 620ms both;
+}
+
+.bt-mp.is-resolved .bt-rail__card--cta.is-forged .bt-btn {
+  animation: bt-cta-emerge-btn 460ms cubic-bezier(0.16, 1, 0.3, 1) 620ms both,
+             bt-cta-breathe 2.8s ease-in-out 1150ms infinite;
+}
+
+
+
+/* the closing card is just copy and a button — no plate behind it */
+.bt-rail__card--cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+  padding-inline: 0;
+  /* half the plate's block padding: there is no fill here to carry it */
+  padding-block: var(--bt-space-8) var(--bt-space-12, 12px);
+}
+.bt-rail__card--cta.is-active { background: none; box-shadow: none; }
+
+/* =========================================================================
+   The terminus
+   Five processes laid a bead down the column. Here it arrives, pools and
+   stops — the weld is finished and the only thing left is to act. Every
+   sibling card speaks in the display face; this one had been the lone
+   holdout in body text, which is why the payoff read quieter than the
+   steps leading to it. Scoped entirely to --cta: no other card changes.
+   ========================================================================= */
+
+.bt-rail__card--cta { position: relative; overflow: visible; }
+
+/* heat still in the finished joint */
+.bt-cta__heat {
+  position: absolute;
+  left: -90px;
+  top: -40px;
+  width: 440px;
+  height: 340px;
+  pointer-events: none;
+  z-index: -1;
+  background: radial-gradient(closest-side,
+    rgba(11, 194, 41, 0.26) 0%,
+    rgba(11, 194, 41, 0.10) 44%,
+    rgba(11, 194, 41, 0.02) 68%,
+    transparent 80%);
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+.bt-rail__card--cta.is-forged .bt-cta__heat { opacity: 1; }
+
+/* the bead drops in and pools */
+/* The viewBox is cropped rather than scaled (0 24 16 34), so the bead keeps
+   its 1:1 unit-to-pixel weight while the drop column halves. */
+.bt-cta__mark { display: block; width: 16px; height: 34px; margin-bottom: var(--bt-space-8); overflow: visible; }
+
+.bt-cta__drop {
+  stroke: url(#btCtaDrop);
+  stroke-width: 4.2;
+  stroke-linecap: round;
+  stroke-dasharray: 2.6 2.2;        /* the seam's own ripple */
+  transform-origin: 8px 24px;
+  scale: 1 0;
+  transition: scale 620ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bt-rail__card--cta.is-forged .bt-cta__drop { scale: 1 1; }
+
+.bt-cta__pool {
+  fill: var(--bt-green);
+  opacity: 0;
+  transform-origin: 8px 47px;
+  scale: 0.4;
+  transition: opacity 520ms ease 180ms, scale 620ms cubic-bezier(0.16, 1, 0.3, 1) 180ms;
+  filter: blur(3px);
+}
+.bt-cta__core {
+  fill: #ffffff;
+  opacity: 0;
+  transition: opacity 420ms ease 300ms;
+  filter: drop-shadow(0 0 8px rgba(217, 255, 227, 0.95))
+          drop-shadow(0 0 20px rgba(11, 194, 41, 0.85));
+}
+.bt-rail__card--cta.is-forged .bt-cta__pool { opacity: 0.85; scale: 1; }
+.bt-rail__card--cta.is-forged .bt-cta__core { opacity: 1; }
+
+/* ---- forged, then cooled ----------------------------------------------
+   The bead pours itself into the statement and is gone; the metal comes up
+   hot and cools into legibility, then the control does the same.
+
+   Two things this must not do, both learned the hard way:
+   it latches ONCE (is-forged never comes off), because keying it to the
+   engaged card restarted the whole sequence every time a scroll crossed
+   the boundary — and blanked the copy mid-read; and it animates opacity
+   and transform only. Animating filter: blur() on display type repaints
+   the glyphs every frame, which is what made it stutter. */
+
+.js .bt-rail__card--cta:not(.is-forged) .bt-rail__lead,
+.js .bt-rail__card--cta:not(.is-forged) .bt-btn,
+.js .bt-rail__card--cta:not(.is-forged) .bt-cta__mark { opacity: 0; }
+
+/* molten spill: grows across the shape, then melts off */
+@keyframes bt-cta-spill {
+  0%   { opacity: 0;    transform: scaleX(0); }
+  22%  { opacity: 1; }
+  58%  { opacity: 0.95; transform: scaleX(1); }
+  100% { opacity: 0;    transform: scaleX(1); }
+}
+
+/* the bead does not sit there: it pours into the text and is gone */
+@keyframes bt-cta-melt {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  45%  { opacity: 0.9; }
+  100% { opacity: 0; transform: translateY(12px) scale(0.72); }
+}
+
+/* up out of the pour, hot, then the heat bleeds off */
+@keyframes bt-cta-emerge {
+  0%   { opacity: 0; transform: translateY(7px);
+         text-shadow: 0 0 34px rgba(217,255,227,1), 0 0 72px rgba(11,194,41,0.9); }
+  38%  { opacity: 1; transform: translateY(0); }
+  100% { opacity: 1; transform: none; text-shadow: none; }
+}
+
+@keyframes bt-cta-emerge-btn {
+  0%   { opacity: 0; transform: scale(0.94); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.bt-rail__card--cta .bt-rail__lead { position: relative; }
+
+.bt-rail__card--cta .bt-rail__lead::before,
+.bt-rail__card--cta .bt-cta__spill {
+  content: "";
+  position: absolute;
+  inset: -14px -22px;
+  z-index: -1;
+  pointer-events: none;
+  transform-origin: left center;
+  opacity: 0;
+  transform: scaleX(0);
+  border-radius: 999px;
+  background: radial-gradient(ellipse 58% 54% at 46% 50%,
+    rgba(217, 255, 227, 0.55) 0%,
+    rgba(11, 194, 41, 0.34) 42%,
+    rgba(11, 194, 41, 0.08) 68%,
+    transparent 82%);
+  filter: blur(6px);               /* static, never animated */
+}
+
+/* the bead melts away as the statement takes its place */
+.bt-rail__card--cta.is-forged .bt-cta__mark {
+  animation: bt-cta-melt 420ms cubic-bezier(0.4, 0, 0.9, 0.4) 260ms both;
+}
+
+.bt-rail__card--cta.is-forged .bt-rail__lead::before {
+  animation: bt-cta-spill 620ms cubic-bezier(0.22, 1, 0.36, 1) 180ms;
+}
+.bt-rail__card--cta.is-forged .bt-rail__lead {
+  animation: bt-cta-emerge 520ms cubic-bezier(0.16, 1, 0.3, 1) 300ms both;
+}
+
+/* then the control, its spill running in from the seam side. It sits
+   outside the button because the button emerges from opacity 0, and
+   opacity takes an element's own pseudo-elements down with it. */
+.bt-rail__card--cta .bt-cta__spill {
+  inset: auto auto -20px -26px;
+  width: 300px;
+  height: 112px;
+}
+.bt-rail__card--cta.is-forged .bt-cta__spill {
+  animation: bt-cta-spill 620ms cubic-bezier(0.22, 1, 0.36, 1) 520ms;
+}
+
+/* the statement, in the voice every other card already uses */
+.bt-rail__card--cta .bt-rail__lead {
+  font-family: var(--bt-font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 1.5rem;
+  line-height: 1.08;
+  letter-spacing: 0;
+  color: var(--bt-white);
+  /* let it find its own break and balance the lines, rather than a fixed
+     measure that forces three lines at every width */
+  text-wrap: balance;
+  margin: 0 0 var(--bt-space-24);
+}
+
+/* the largest control in the column */
+.bt-rail__card--cta .bt-btn {
+  font-size: 1.125rem;
+  padding: 18px var(--bt-space-48);
+}
+
+/* ---- desktop: layered composition + pinned rail ----------------------- */
+@media (min-width: 1024px) {
+  .bt-mp__pin { min-height: 760px; display: flex; align-items: flex-start; }
+  .bt-mp__copy { padding-top: 0; max-width: 46%; }
+
+  .bt-mp__video {
+    left: 52%;
+    right: calc(50% - 50vw);
+    top: var(--bt-section-y);
+    bottom: var(--bt-space-64);
+    height: auto;
+    border-radius: var(--bt-radius-card) 0 0 var(--bt-radius-card);
+  }
+  .bt-mp__vscrim {
+    background: linear-gradient(to right, rgba(28,28,28,0.92) 0%, rgba(28,28,28,0.45) 38%, rgba(28,28,28,0.18) 100%);
+  }
+
+  .bt-mp__layer {
+    display: block;
+    left: 46%;
+    top: var(--bt-section-y);
+    height: calc(100% - var(--bt-section-y) - var(--bt-space-64));
+    right: auto;
+  }
+  .bt-mp__glow {
+    left: 40%;
+    top: 18%;
+    width: 34%;
+    aspect-ratio: 1;
+  }
+
+  .bt-rail { margin-top: var(--bt-space-48); max-width: 100%; }
+  .bt-seam, .bt-spark { display: block; }
+  .bt-seam-h { display: none; }   /* the vertical seam takes over */
+
+  .bt-rail__viewport {
+    overflow: hidden;
+    scroll-snap-type: none;
+    height: 456px;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 8%, #000 86%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 8%, #000 86%, transparent 100%);
+  }
+
+  .bt-rail__list {
+    flex-direction: column;
+    gap: var(--bt-space-24);
+    perspective: 1400px;
+  }
+
+  /* only while the section is actually driving motion */
+  .bt-mp[data-pinned] .bt-rail__list { will-change: transform; }
+  .bt-mp[data-pinned] .bt-rail__card { will-change: transform, opacity, filter; }
+  .bt-mp[data-pinned] .bt-mp__layer,
+  .bt-mp[data-pinned] .bt-mp__video { will-change: transform; }
+  .bt-rail__card {
+    flex: 0 0 auto;
+    padding: var(--bt-space-24) var(--bt-space-32) var(--bt-space-32);
+  }
+  /* Feather the plate's horizontal edges on every card that is not engaged.
+     The 18px band sits inside the card's own 24/32px padding, so no type is
+     touched; what it removes is the hard top and bottom rule that read as a
+     line where a departing card met the plate-less CTA. The CTA is excluded
+     because it carries no plate and its heat and spill deliberately overflow. */
+  .bt-rail__card:not(.is-active):not(.bt-rail__card--cta) {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+  }
+  /* 1.5x the mobile type for the pinned composition */
+  .bt-rail__idx  { font-size: 1rem; margin-bottom: var(--bt-space-12, 12px); }
+  .bt-rail__name { font-size: 1.5rem; margin-bottom: var(--bt-space-12, 12px); }
+  .bt-rail__cap  { font-size: 1.40625rem; line-height: 1.45; }
+  .bt-rail__card--cta { padding-block: var(--bt-space-12, 12px) var(--bt-space-16); }
+  .bt-rail__card--cta .bt-rail__lead { font-size: 2.25rem; }
+  .bt-rail__card--cta .bt-btn { font-size: 1.25rem; padding: 20px var(--bt-space-48); }
+
+  /* the section is pinned while the rail advances */
+  .bt-mp[data-pinned] { height: calc(100vh + var(--bt-mp-runway, 110vh)); }
+  .bt-mp[data-pinned] .bt-mp__pin {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    min-height: 700px;
+    padding-block: var(--bt-section-y);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* No pinning, no depth, no parallax. The LED still lights and the card
+     still brightens, because that feedback is what tells you which process
+     you are reading — reduced motion is fewer movements, not no state. */
+  .bt-mp[data-pinned] { height: auto; }
+  .bt-mp[data-pinned] .bt-mp__pin { position: relative; height: auto; }
+  .bt-rail__viewport { overflow-y: auto; }
+  .bt-rail__list { transform: none !important; perspective: none; }
+  .bt-rail__card { transform: none !important; filter: none !important; opacity: 1 !important; }
+  .bt-mp__product, .bt-mp__video { transform: none !important; }
+  .bt-rail__card.is-striking::before { animation: none; }
+  .bt-rail__card.is-striking .bt-rail__led { animation: none; }
+  .bt-rail__card--cta.is-active .bt-btn { animation: none; }
+  .bt-mp[data-boot] .bt-mp__layer,
+  .bt-mp[data-boot] .bt-mp__glow,
+  .bt-mp[data-boot] .bt-rail__card { opacity: 1 !important; animation: none !important; }
+  .bt-mp__glow { animation: none; opacity: 0.55; }
+  .bt-mp[data-boot="running"] .bt-mp__vid { animation: none; }
+  .bt-mp[data-boot="running"] .bt-mp__copy .bt-accent { animation: none; }
+  .bt-seam__halo { animation: none !important; opacity: 0.22; }
+  .bt-seam__core { display: none; }
+  .bt-seam__bead { stroke: var(--bt-green); }
+  .bt-spark { display: none; }
+  .bt-cta__drop { scale: 1 1 !important; transition: none !important; }
+  .bt-cta__pool { opacity: 0.85 !important; scale: 1 !important; transition: none !important; }
+  .bt-cta__core { opacity: 1 !important; transition: none !important; }
+  .bt-cta__heat { opacity: 1 !important; transition: none !important; }
+  .bt-seam__flare { animation: none !important; opacity: 0 !important; }
+  .bt-mp.is-resolved .bt-rail__card--cta.is-forged .bt-btn { animation: none !important; }
+  .bt-rail__card--cta .bt-cta__mark { animation: none !important; opacity: 1 !important; }
+  .js .bt-rail__card--cta:not(.is-forged) .bt-rail__lead,
+  .js .bt-rail__card--cta:not(.is-forged) .bt-btn,
+  .js .bt-rail__card--cta:not(.is-forged) .bt-cta__mark { opacity: 1; }
+  .bt-rail__card--cta .bt-rail__lead,
+  .bt-rail__card--cta .bt-btn { animation: none !important; opacity: 1 !important; filter: none !important; }
+  .bt-rail__card--cta .bt-rail__lead::before,
+  .bt-rail__card--cta .bt-cta__spill { animation: none !important; opacity: 0 !important; }
+}
+
+/* =========================================================================
+   4 — Engineering
+   ========================================================================= */
+
+/* ---- Four features ------------------------------------------------------
+   Not cards: no panel, no border, no fill behind the text. Only the icon
+   takes a container, so the items sit on the page ground and the glow has
+   something to sit against.
+   ------------------------------------------------------------------------- */
+
+.bt-feats {
+  margin-top: var(--bt-space-48);
+  padding-top: var(--bt-space-48);
+  border-top: 1px solid var(--bt-green);
+  display: grid;
+  gap: var(--bt-space-48);
+}
+
+.bt-feat {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--bt-space-24);
+  row-gap: var(--bt-space-8);
+  align-items: start;
+  align-content: start;          /* else a 1-line title stretches away from its text */
+}
+
+.bt-feat__icon {
+  grid-row: span 2;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--bt-green);
+  border-radius: 14px;
+  color: var(--bt-green);
+  background: rgba(11, 194, 41, 0.07);
+  /* Arc bloom — light thrown off the border and caught inside the box. */
+  box-shadow: 0 0 22px rgba(11, 194, 41, 0.30),
+              inset 0 0 18px rgba(11, 194, 41, 0.16);
+}
+
+/* Supplied PNGs, each its own aspect ratio — cap the box, never stretch. */
+.bt-feat__icon img { width: 28px; height: 28px; object-fit: contain; }
+
+.bt-feat__k {
+  margin: 0;
+  padding-top: 6px;              /* sets the cap height against the icon's top edge */
+  font-family: var(--bt-font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.9375rem;
+  line-height: 1.25;
+  color: var(--bt-white);
+}
+
+.bt-feat__d {
+  margin: 0;
+  max-width: 46ch;
+  font-size: 0.875rem;
+  color: var(--bt-silver);
+}
+
+@media (min-width: 768px) {
+  .bt-feats {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: var(--bt-space-64);
+    row-gap: var(--bt-space-64);
+  }
+  .bt-feat { column-gap: var(--bt-space-32); }
+  .bt-feat__icon { width: 64px; height: 64px; border-radius: 16px; }
+  .bt-feat__icon img { width: 32px; height: 32px; }
+  .bt-feat__k { font-size: 1.0625rem; padding-top: 8px; }
+  .bt-feat__d { font-size: 0.9375rem; }
+}
+
+/* ---- Rating plate -------------------------------------------------------
+   The section's peak, and the page's one summary strip. Every approved
+   figure on a single charcoal slab, with the spec sheet as the plate's own
+   bottom edge rather than a pill adrift beneath it. The green rule is the
+   page's existing device at full strength: 3px here against the 1px it
+   runs everywhere else, struck across as the plate arrives.
+   ------------------------------------------------------------------------- */
+
+.bt-plate {
+  position: relative;
+  margin-top: var(--bt-space-64);
+  background: var(--bt-charcoal);
+  border-radius: 0 0 var(--bt-radius-card) var(--bt-radius-card);
+}
+
+.bt-plate::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--bt-green);
+  transform-origin: left center;
+  transition: scale 620ms cubic-bezier(0.16, 1, 0.3, 1) 140ms;
+}
+
+.js .bt-plate:not(.is-in)::before { scale: 0 1; }
+
+.bt-plate__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--bt-space-8) var(--bt-space-24);
+  padding: var(--bt-space-24) var(--bt-space-16) var(--bt-space-16);
+  border-bottom: 1px solid var(--bt-hairline);
+}
+
+.bt-plate__title {
+  font-family: var(--bt-font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 1.25rem;
+  line-height: 1;
+  margin: 0;
+  color: var(--bt-white);
+}
+
+.bt-plate__ids {
+  display: flex;
+  gap: var(--bt-space-16);
+  margin: 0;
+  font-family: var(--bt-font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--bt-silver);
+}
+
+.bt-plate__list {
+  list-style: none;
+  margin: 0;
+  padding: var(--bt-space-8) var(--bt-space-16) var(--bt-space-16);
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.bt-plate__item {
+  padding: var(--bt-space-8) 0;
+  border-bottom: 1px solid var(--bt-hairline);
+  font-family: var(--bt-font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--bt-silver);          /* 7.57:1 on charcoal */
+}
+
+.bt-plate__item:last-child { border-bottom: 0; }
+
+/* The figure is the argument — colour marks it, the words stay silver. */
+.bt-plate__item b { font-weight: 700; color: var(--bt-green); }  /* 5.75:1 on charcoal */
+
+@media (min-width: 768px) {
+  .bt-plate__head { padding: var(--bt-space-32) var(--bt-space-32) var(--bt-space-16); }
+  .bt-plate__title { font-size: 1.5rem; }
+  /* Column-major: the first five figures fill the left column, not every
+     second row, so each column reads top to bottom like a real plate. */
+  .bt-plate__list {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(5, auto);
+    grid-auto-flow: column;
+    column-gap: var(--bt-space-48);
+    padding: var(--bt-space-8) var(--bt-space-32) var(--bt-space-24);
+  }
+  .bt-plate__item { font-size: 0.875rem; }
+  .bt-plate__item:nth-child(5) { border-bottom: 0; }
+}
+
+/* Two sheets, one per variant. Filled green at the user's direction — this
+   is louder than PRODUCT.md's "quieter than the demo CTA" calls for. */
+.bt-plate__dls {
+  display: grid;
+  gap: var(--bt-space-16);
+  padding: var(--bt-space-16);
+  border-top: 1px solid var(--bt-green);
+}
+
+.bt-plate__dls .bt-btn {
+  font-size: 0.9375rem;          /* the (Water) label sets this — one line at 375px */
+  padding-inline: var(--bt-space-16);
+  text-align: center;
+}
+
+.bt-btn__i { width: 18px; height: 18px; flex: none; }
+
+@media (min-width: 768px) {
+  .bt-plate__dls {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--bt-space-24);
+    padding: var(--bt-space-24) var(--bt-space-32);
+  }
+  .bt-plate__dls .bt-btn { font-size: 1rem; }
+}
+
+/* Hold the label on one line: the longer (Water) sheet is what sets the
+   size, so the step up waits until the columns are wide enough for it. */
+@media (min-width: 1024px) {
+  .bt-plate__dls .bt-btn { font-size: 1.0625rem; padding-inline: var(--bt-space-24); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .bt-plate:not(.is-in)::before { scale: 1; }
+}
+
+.bt-dl { text-align: center; margin-top: var(--bt-space-32); }
+
+/* =========================================================================
+   5 — Applications
+   ========================================================================= */
+
+/* ---- Applications -------------------------------------------------------
+   A scroll-snap rail on the phone, where four cards cannot fit; a 2x2 grid
+   from tablet up, so all four applications are on screen at once.
+   CSS scroll-snap only; no carousel library.
+   ------------------------------------------------------------------------- */
+
+.bt-apps {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 82%;
+  gap: var(--bt-space-16);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline-start: var(--bt-gutter);
+  padding-inline: var(--bt-gutter);
+  margin-inline: calc(var(--bt-gutter) * -1);
+  padding-bottom: var(--bt-space-8);
+  margin-top: var(--bt-space-64);
+  overscroll-behavior-x: contain;
+  /* The dots below are the affordance now, so the bar itself goes away. */
+  scrollbar-width: none;
+}
+
+.bt-apps::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
+.bt-apps > * { scroll-snap-align: start; }
+
+@media (min-width: 768px) {
+  .bt-apps {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-columns: auto;
+    overflow: visible;
+    scroll-snap-type: none;
+    padding-inline: 0;
+    margin-inline: 0;
+    padding-bottom: 0;
+    gap: var(--bt-space-24);
+  }
+}
+
+@media (min-width: 1024px) {
+  .bt-apps { gap: var(--bt-space-32); }
+}
+
+/* ---- Rail dots ----------------------------------------------------------
+   One per card, green on the card in view. Buttons, not decoration: they
+   jump the rail and take keyboard focus.
+   The run's spacing is set by the target, not by the gap: a 10px dot inside
+   a 44px button put the centres 48px apart. Halving that to 24px means the
+   target narrows with it, so the height stays at 44 and only the width is
+   cut — 24x44 still clears the WCAG 2.2 minimum of 24x24, and the carousel
+   itself remains a second way to reach every card.
+   ------------------------------------------------------------------------- */
+.bt-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin-top: var(--bt-space-8);
+}
+
+.bt-dot {
+  width: 24px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.bt-dot::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #5a5a5a;
+  transition: background 200ms ease, scale 200ms ease;
+}
+
+.bt-dot:hover::before { background: #7a7a7a; }
+
+.bt-dot[aria-current="true"]::before {
+  background: var(--bt-green);
+  scale: 1.3;
+}
+
+.bt-dot__label {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Above the phone every card is on screen, so the dots have nothing to say. */
+@media (min-width: 768px) {
+  .bt-dots { display: none; }
+}
+
+.bt-app {
+  background: var(--bt-charcoal);
+  border-top: 1px solid var(--bt-green);
+  border-radius: var(--bt-radius-card);
+  overflow: hidden;
+}
+
+/* The photograph is the argument here — it crops rather than letterboxes. */
+.bt-app__img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+
+.bt-app__body { padding: var(--bt-space-24); }
+
+/* Index and rule on one line — the number earns its place by carrying the
+   rule, instead of floating above the title as an ornament. */
+.bt-app__num {
+  display: flex;
+  align-items: center;
+  gap: var(--bt-space-16);
+  font-family: var(--bt-font-display);
+  font-size: 0.875rem;
+  color: var(--bt-green);
+  letter-spacing: 0.08em;
+  margin-bottom: var(--bt-space-16);
+  font-variant-numeric: tabular-nums;
+}
+
+.bt-app__num::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--bt-hairline);
+}
+
+.bt-app__cap { color: var(--bt-silver); font-size: 0.9375rem; margin: var(--bt-space-8) 0 0; }
+
+@media (min-width: 1024px) {
+  .bt-app__body { padding: var(--bt-space-32); }
+}
+
+/* =========================================================================
+   6 — Power up
+   The applications grid ends and the page asks for the decision. The photo
+   carries the whole band; the only furniture is the question, the control,
+   and an arrow that is also the link to the form immediately below it.
+   ========================================================================= */
+
+.bt-powerup {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;                /* the parallax plate is taller than the band */
+  /* No margin: the applications section carries its own closing rhythm again
+     now that the band is no longer nested inside it. The inline padding-bottom
+     of 0 it used to need left the cards butting against its own bottom edge. */
+  min-height: 480px;
+  display: grid;
+  background: var(--bt-black);
+
+  /* The plate's overhang and the travel the driver is allowed are one
+     contract, so the driver reads them from here rather than keeping its own
+     copy. Deliberately asymmetric: a big overhang below buys a long run, and
+     keeping the one above small is what holds the band's resting window up on
+     the brick wall, where the heading has to stay legible. Each is 1% inside
+     its overhang — that margin is what guarantees no edge can enter frame. */
+  --bt-plate-up: 0.09;
+  --bt-plate-down: 0.23;
+}
+
+.bt-powerup__media,
+.bt-powerup__scrim,
+.bt-powerup__inner { grid-area: 1 / 1; }
+
+/* The plate is positioned, so it would otherwise paint over an unpositioned
+   scrim. Both get an explicit layer rather than relying on source order. */
+.bt-powerup__media { position: relative; z-index: 0; overflow: hidden; }
+.bt-powerup__scrim { position: relative; z-index: 1; }
+
+.bt-powerup__img {
+  position: absolute;
+  left: 0;
+  top: -10%;                       /* overhang: 10% above, 24% below */
+  width: 100%;
+  height: 134%;
+  object-fit: cover;
+  /* Cover is width-driven here (a near-square photo in a wide band), so the
+     plate shows the top 57% of the frame. Anchored to the top: that puts the
+     brick wall under the heading and the arc and sparks across the middle,
+     which is the only position where the subject clears the scrim at all. */
+  object-position: center top;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Phone: the welder sat under the heading with his helmet clipped by the
+   band's top edge. Dropping the plate 6% brings him clear. Overhang above
+   shrinks to 2%, which is why the travel below is retuned to match. */
+@media (max-width: 767px) {
+  .bt-powerup__img { top: -2%; height: 142%; }
+  /* The upward pull is what buries him: at 0.23 the plate rides up to 110px
+     on a 480px band, undoing the drop. Travel still pairs with the overhang
+     above (2%) and below (40%), so no edge can enter frame. */
+  .bt-powerup { --bt-plate-up: 0.02; --bt-plate-down: 0.08; }
+}
+
+
+
+/* Top-weighted, because that is where the type sits and where the photo's
+   own brick wall is lightest. The base darkens again so the band hands off
+   to the booking section rather than ending on a bright edge. */
+/* Measured against the plate, not guessed. The photo runs 53–126 across the
+   brick wall in the top quarter and blows out to 254 where the arc is, so the
+   scrim holds hard through the type and then lets go over the arc — which is
+   the part worth showing. Green on the worst pixel under the heading lands at
+   7.3:1; the arc keeps its highlights. */
+.bt-powerup__scrim {
+  background: linear-gradient(to bottom,
+    rgba(0, 0, 0, 0.86) 0%,
+    rgba(0, 0, 0, 0.82) 26%,
+    rgba(0, 0, 0, 0.62) 36%,
+    rgba(0, 0, 0, 0.34) 46%,
+    rgba(0, 0, 0, 0.24) 62%,
+    rgba(0, 0, 0, 0.34) 85%,
+    rgba(0, 0, 0, 0.52) 100%);
+}
+
+/* The block used to be pinned to the top of a container twice its height:
+   339px of content above 353px of dead photo, with the heading 48px off the
+   top edge. It now frames the band instead — equal insets, the question and
+   its control held tight at the top where the wall is, and the arrow carried
+   to the foot, which is where it was always pointing. The space between them
+   is not a gap left over; it is the photograph. */
+.bt-powerup__inner {
+  position: relative;
+  z-index: 2;
+  align-self: stretch;               /* the type belongs on the wall, not the arc */
+  container-type: inline-size;
+  /* Its own coefficient: the longest line here is READY TO POWER UP, which
+     is wider than any heading the page-wide 9.10cqw was measured against. */
+  --bt-h2-coeff: 5.60cqw;
+  padding-block: var(--bt-space-48);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.bt-powerup__h { line-height: 1.02; text-wrap: balance; }
+
+/* Narrow: one phrase per line, which is how the three colour runs are meant
+   to read. Free wrapping put POWER UP and YOUR on the same line and broke
+   that grouping. 7.60cqw is set by the longest run, YOUR WORKSHOP? at
+   12.58em, which lands at 96% of the measure — and stays above the 18.66px
+   bold threshold for large text all the way down to a 320px screen. */
+@media (max-width: 767.98px) {
+  .bt-powerup__inner { --bt-h2-coeff: 7.60cqw; }
+  .bt-powerup__h .bt-accent:first-child { display: block; }
+
+  /* Below roughly 690px the cover flips from width-driven to height-driven:
+     the whole frame is squeezed into the band, the brick wall shrinks to the
+     top 8%, and the heading lands straight on the arc at 254. The scrim has
+     to hold through the type here and only release under the sparks. */
+  .bt-powerup__scrim {
+    background: linear-gradient(to bottom,
+      rgba(0, 0, 0, 0.90) 0%,
+      rgba(0, 0, 0, 0.86) 18%,
+      rgba(0, 0, 0, 0.82) 34%,
+      rgba(0, 0, 0, 0.58) 46%,
+      rgba(0, 0, 0, 0.30) 62%,
+      rgba(0, 0, 0, 0.34) 84%,
+      rgba(0, 0, 0, 0.56) 100%);
+  }
+}
+
+/* The question and the control are one group, so the gap between them stays
+   at the page's copy-to-control step. The size is the terminal-CTA treatment
+   the rail's closing card already established — the inline default read thin
+   under 56px of display type. */
+.bt-powerup__btn {
+  margin-top: var(--bt-space-32);
+  margin-bottom: var(--bt-space-48);   /* the floor under the arrow's auto gap */
+}
+
+/* The oversized control was sized against 56px of display type; on the phone
+   the heading is far smaller and it outgrew every other button on the page. */
+@media (min-width: 768px) {
+  .bt-powerup__btn { font-size: 1.25rem; padding: 20px var(--bt-space-48); }
+}
+
+/* ---- the seam -----------------------------------------------------------
+   Not an icon dropped at the foot of the band: a bead running out of the
+   control and down to the form it points at, the same device the process
+   rail lays. At 290px from the button a 104px mark read as a stray graphic
+   — a seam that spans the distance reads as intent. The shaft flexes, so
+   the run is whatever the band leaves it, and the charge is height-agnostic
+   because it travels exactly one shaft length whatever that is. */
+
+.bt-powerup__arrow {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 1 auto;                    /* takes the band's remaining height */
+  min-height: 104px;
+  width: 34px;
+  line-height: 0;
+}
+.bt-powerup__arrow:focus-visible { outline: 2px solid var(--bt-green); outline-offset: 10px; }
+
+.bt-arrow__seam {
+  position: relative;
+  flex: 1 1 auto;
+  width: 4px;
+  border-radius: 2px;
+  overflow: hidden;                  /* the charge is clipped to the run */
+  /* It lands over the machine, which is clipped white in places, so the bead
+     needs its own edge. drop-shadow and not box-shadow: the shadow has to
+     follow the gradient's alpha and fade out with it at the top, where a
+     box-shadow would draw a dark rule against nothing. */
+  filter: drop-shadow(0 1px 5px rgba(0, 0, 0, 0.9));
+  background: linear-gradient(to bottom,
+    rgba(11, 194, 41, 0) 0%,
+    rgba(11, 194, 41, 0.55) 26%,
+    rgba(11, 194, 41, 0.95) 62%,
+    #8dffa8 100%);
+}
+
+/* A full-height element carrying one bright band, so translateY(-100%) to
+   translateY(100%) walks the spark down the seam at any length. */
+.bt-arrow__charge {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    transparent 58%,
+    rgba(217, 255, 227, 0.85) 80%,
+    #ffffff 93%,
+    transparent 100%);
+  opacity: 0;
+}
+
+.bt-arrow__head {
+  display: block;
+  flex: none;
+  width: 34px;
+  height: 24px;
+  margin-top: -1px;                  /* optical: closes the join to the seam */
+  overflow: visible;
+  fill: var(--bt-green);
+  filter: drop-shadow(0 2px 7px rgba(0, 0, 0, 0.9));
+  transition: fill 200ms ease;
+}
+
+/* the heat where the bead lands */
+.bt-powerup__glow {
+  position: absolute;
+  left: 50%;
+  bottom: -73px;                     /* centred on the head, not the run */
+  width: 170px;
+  height: 170px;
+  margin-left: -85px;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.5;
+  background: radial-gradient(closest-side,
+    rgba(11, 194, 41, 0.52) 0%,
+    rgba(11, 194, 41, 0.22) 40%,
+    rgba(11, 194, 41, 0.06) 66%,
+    transparent 80%);
+}
+
+@keyframes bt-arrow-glow {
+  0%, 100% { opacity: 0.32; transform: scale(0.86); }
+  50%      { opacity: 1;    transform: scale(1.1); }
+}
+@keyframes bt-arrow-charge {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  12%  { opacity: 1; }
+  76%  { opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+/* One moment, not three: the bead runs the seam and the heat answers it at
+   the landing. Idle loops only while the band is actually on screen. */
+.js .bt-powerup[data-inview] .bt-arrow__charge { animation: bt-arrow-charge 2.8s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.js .bt-powerup[data-inview] .bt-powerup__glow { animation: bt-arrow-glow 2.8s ease-in-out infinite; }
+
+.bt-powerup__arrow:hover .bt-powerup__glow,
+.bt-powerup__arrow:focus-visible .bt-powerup__glow { opacity: 1; animation-play-state: paused; }
+.bt-powerup__arrow:hover .bt-arrow__head { fill: #8dffa8; }
+
+@media (min-width: 1024px) {
+  .bt-powerup {
+    min-height: 740px;
+    --bt-plate-up: 0.11;
+    --bt-plate-down: 0.37;         /* 0.48 of the band end to end */
+  }
+  .bt-powerup__img { top: -12%; height: 152%; }
+  .bt-powerup__inner { padding-block: var(--bt-space-64); }
+}
+
+/* =========================================================================
+   7 — Demo booking
+   ========================================================================= */
+
+.bt-demo {
+  position: relative;
+  background: var(--bt-charcoal-dark);
+  padding-block: var(--bt-section-y);
+  scroll-margin-top: calc(var(--bt-header-h) + var(--bt-space-16));
+  overflow: hidden;
+}
+
+/* The placeholder names an asset nobody has supplied yet, which is its job.
+   Centred behind centred copy at 12% it could not do that job and damaged
+   the composition instead, so the label parks in the corner where it stays
+   a legible build note and out of the type. */
+
+/* It was 1fr 1fr with align-items:center, so three lines of copy floated in
+   the middle of a column the form's full height — half the section was void.
+   Stacked and centred instead, on the same axis the band's seam runs down,
+   which is also what lets the heading size to the page's full display cap
+   rather than to half a measure. */
+.bt-demo__grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: var(--bt-space-48);
+}
+
+.bt-demo__copy .bt-h2 { margin-bottom: var(--bt-space-24); }
+.bt-demo__copy .bt-body { color: var(--bt-silver); }
+
+@media (min-width: 768px) {
+  .bt-demo__grid { gap: var(--bt-space-64); }
+
+  /* The container is wide so the heading reaches its cap; the body carries
+     its own measure inside it rather than dragging the heading down with it. */
+  .bt-demo__copy {
+    /* width:100% is load-bearing, not habit. This element carries
+       container-type: inline-size, so its inline size may not be resolved
+       from its contents — and auto inline margins on a grid item make the
+       used width fit-content. Together that resolved to 0, collapsing the
+       block and taking the cqw heading to 0px with it. */
+    width: 100%;
+    max-width: 820px;
+    margin-inline: auto;
+    text-align: center;
+  }
+  .bt-demo__copy .bt-body { max-width: 68ch; margin-inline: auto; }
+
+  .bt-panel { max-width: 820px; margin-inline: auto; width: 100%; }
+}
+
+/* ---- contact row --------------------------------------------------------
+   The section closes on the three ways to reach a human. Three columns on
+   the stack's own 820px axis, so the address wraps to the two lines it is
+   written in and the row sits under the panel rather than beside it.
+   The badge is a container, not a second icon style: the glyphs inside keep
+   the 24/2px outline family the page's other authored SVGs already use.
+   ------------------------------------------------------------------------- */
+.bt-contact {
+  font-style: normal;            /* <address> ships italic */
+  margin: 0 auto;
+  max-width: 820px;              /* the stack's column, so the axis holds */
+  display: grid;
+  gap: var(--bt-space-24);
+}
+
+@media (min-width: 768px) {
+  .bt-contact { grid-template-columns: repeat(3, 1fr); gap: var(--bt-space-32); }
+}
+
+.bt-contact__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--bt-space-16);
+}
+
+.bt-contact__badge {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--bt-black);
+  color: var(--bt-green);
+}
+.bt-contact__badge svg { display: block; width: 19px; height: 19px; }
+
+.bt-contact__text {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--bt-silver);
+  padding-top: 9px;              /* optical: first line centres on the badge */
+}
+
+/* The two actionable items carry the underline the page already uses for
+   links, at the same 0.25em offset as .bt-textlink; the address stays silver
+   and unmarked, so the row does not promise a tap it cannot honour. Green is
+   kept for the interaction rather than spent on the resting state. */
+a.bt-contact__text {
+  color: var(--bt-white);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  text-decoration-thickness: 1px;
+  overflow-wrap: anywhere;       /* the address line is long and unbreakable */
+  transition: color 140ms ease;
+}
+a.bt-contact__text:hover { color: var(--bt-green); }
+a.bt-contact__text:focus-visible { outline: 2px solid var(--bt-green); outline-offset: 3px; border-radius: 2px; }
+
+/* A single 15px line is a 32px target. On touch these two are the whole
+   point of the row, so the hit area is padded down to 44px — below the
+   text, which leaves the optical alignment with the badge untouched. */
+@media (max-width: 767.98px), (pointer: coarse) {
+  a.bt-contact__text { display: inline-block; padding-bottom: 13px; }
+}
+
+/* ---- Form panel ---------------------------------------------------------
+   The page's one conversion point, so it is the one object that lifts off
+   the ground: the green rule the rest of the page runs at 1px, at the
+   plate's 3px, over a real cast shadow. Everything inside stays quiet.
+   ------------------------------------------------------------------------- */
+.bt-panel {
+  position: relative;
+  container-type: inline-size;
+  background: var(--bt-charcoal);
+  border-radius: 0 0 var(--bt-radius-card) var(--bt-radius-card);
+  padding: var(--bt-space-32) var(--bt-space-24);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+}
+
+/* The same 3px rule, now shaped: the band above runs a bead down its centre
+   line and points it here, so the rule is hot where that bead lands and
+   cools to nothing at the corners. The device is the page's own, at the
+   strength this plate already claimed — only aimed. */
+.bt-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  pointer-events: none;
+  background: linear-gradient(to right,
+    rgba(11, 194, 41, 0) 0%,
+    rgba(11, 194, 41, 0.45) 16%,
+    var(--bt-green) 38%,
+    #8dffa8 50%,
+    var(--bt-green) 62%,
+    rgba(11, 194, 41, 0.45) 84%,
+    rgba(11, 194, 41, 0) 100%);
+}
+
+@media (min-width: 768px) { .bt-panel { padding: var(--bt-space-48) var(--bt-space-32); } }
+
+.bt-panel form { display: grid; gap: var(--bt-space-24); }
+
+.bt-field { display: flex; flex-direction: column; gap: var(--bt-space-8); }
+
+/* Six stacked fields read as more work than they are. Pairing the four
+   short ones brings the form down to four rows; the container query does it
+   on the panel's own width, which halves at the two-column breakpoint. */
+.bt-fieldrow { display: grid; gap: var(--bt-space-24); align-items: start; }
+
+@container (min-width: 420px) {
+  .bt-fieldrow { grid-template-columns: 1fr 1fr; }
+}
+
+.bt-field__label {
+  font-weight: 600;
+  font-size: 0.8125rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bt-silver);
+}
+
+.bt-field__opt { color: #8a8a8a; letter-spacing: 0; text-transform: none; font-weight: 400; }
+
+.bt-input,
+.bt-select {
+  font-family: var(--bt-font-body);
+  font-size: 1rem;
+  width: 100%;
+  padding: 14px var(--bt-space-16);
+  color: var(--bt-white);
+  background: var(--bt-black);
+  border: 1px solid #5a5a5a;
+  border-radius: var(--bt-radius-card);
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.bt-input::placeholder { color: #7d7d7d; }
+.bt-input:hover, .bt-select:hover { border-color: #7a7a7a; }
+
+/* The active field catches the arc, the same bloom the feature icons carry. */
+.bt-input:focus, .bt-select:focus {
+  outline: 2px solid var(--bt-green);
+  outline-offset: 1px;
+  border-color: var(--bt-green);
+  box-shadow: 0 0 18px rgba(11, 194, 41, 0.25);
+}
+
+.bt-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='%23C0C0C0' d='M1.4 0 6 4.6 10.6 0 12 1.4 6 7.4 0 1.4z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right var(--bt-space-16) center;
+  padding-right: var(--bt-space-48);
+}
+
+/* Green is this page's success signal — the submit fill, the focus ring,
+   every link, figure and rule. Spending it on failure too meant a rejected
+   form came back looking like an accepted one, and an invalid field was
+   indistinguishable from the focused one the cursor was in.
+   The signal is now weight and shape rather than hue: it needs no new colour
+   in a pinned palette, and it survives without colour vision. */
+.bt-field.is-invalid .bt-input,
+.bt-field.is-invalid .bt-select {
+  border-color: var(--bt-white);
+  border-width: 2px;
+}
+
+.bt-field__err {
+  font-size: 0.8125rem;
+  color: var(--bt-white);
+  margin: 0;
+  display: none;
+}
+.bt-field.is-invalid .bt-field__err { display: block; }
+
+/* the reason, as a tag rather than a coloured word */
+.bt-field__err b {
+  display: inline-block;
+  color: var(--bt-black);
+  background: var(--bt-white);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+
+/* ---- Choices ------------------------------------------------------------
+   Native controls tinted with the brand green rather than a custom control:
+   `color-scheme: dark` is already set on the page, so the browser draws them
+   correctly on charcoal and keyboard behaviour stays the platform's.
+   ------------------------------------------------------------------------- */
+.bt-choices { display: grid; gap: var(--bt-space-8); margin-top: var(--bt-space-4); }
+
+/* Three short options sit in a row rather than a column — back-to-back
+   stacked radiogroups turn the middle of the form into a wall of dots. */
+.bt-choices--inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bt-space-8) var(--bt-space-24);
+}
+
+.bt-choice,
+.bt-check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--bt-space-16);
+  cursor: pointer;
+}
+
+.bt-choice input,
+.bt-check input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--bt-green);
+  cursor: pointer;
+}
+
+.bt-choice span {
+  color: var(--bt-white);
+  font-size: 0.9375rem;
+  line-height: 1.35;
+}
+
+.bt-check span {
+  color: var(--bt-silver);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.bt-choice:hover span { color: var(--bt-green); }
+
+.bt-field[aria-invalid="true"] .bt-choice input { outline: 2px solid var(--bt-green); outline-offset: 2px; }
+
+/* The date field keeps the height of every other control. */
+.bt-input[type="date"] { min-height: 52px; }
+.bt-input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.75; }
+.bt-input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+
+.bt-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+.bt-panel__submit { margin-top: var(--bt-space-8); }
+
+/* Answers "what happens if I press this" before the press, not after it. */
+.bt-panel__promise {
+  margin: 0 0 var(--bt-space-16);
+  text-align: center;
+  font-size: 0.9375rem;
+  color: var(--bt-white);
+}
+
+@media (min-width: 768px) {
+  .bt-panel__submit .bt-btn { font-size: 1.1875rem; padding-block: 18px; }
+}
+
+.bt-confirm { text-align: center; padding: var(--bt-space-32) 0; }
+.bt-confirm__mark {
+  width: 44px; height: 44px; margin: 0 auto var(--bt-space-24);
+  border: 2px solid var(--bt-green); border-radius: 50%;
+  display: grid; place-items: center;
+}
+.bt-confirm p { margin: 0; color: var(--bt-white); }
+
+/* The observers in fab500hd.js have always toggled .is-visible correctly;
+   there was simply never a base rule for them to act on. Without it the bar
+   rendered static, in document flow, at the foot of the page — below the
+   form it points at — while body reserved 68px of padding for a bar that
+   never floated. On an 8,200px funnel that left ~4,000px of mobile scroll
+   with no visible call to action. */
+.bt-sticky {
+  --bt-sticky-pad: var(--bt-space-12, 12px);
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 200;                  /* over the masthead's 10, under the skip link's 400 */
+  background: var(--bt-charcoal-dark);
+  border-top: 1px solid var(--bt-green);
+  box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.45);
+  padding: var(--bt-sticky-pad) var(--bt-gutter)
+           calc(var(--bt-sticky-pad) + env(safe-area-inset-bottom, 0px));
+  translate: 0 100%;             /* the resting state .is-visible undoes */
+  transition: translate 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bt-sticky.is-visible { translate: 0 0; }
+
+.bt-sticky__inner {
+  max-width: var(--bt-max);
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bt-space-16);
+}
+
+.bt-sticky__name { display: none; }
+
+.bt-sticky .bt-btn { width: 100%; }
+
+@media (min-width: 768px) {
+  .bt-sticky { --bt-sticky-pad: var(--bt-space-16); }
+  .bt-sticky__name {
+    display: block;
+    font-family: var(--bt-font-display);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1rem;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bt-sticky .bt-btn { width: auto; }
+}
+
+/* =========================================================================
+   Masthead — minimal chrome: logo + phone only
+   ========================================================================= */
+
+/* Fixed, not sticky: sticky would take up flow and push the hero down, and
+   the hero is meant to run full-bleed underneath. Transparent over the hero
+   so the footage reads; past it the bar takes its own ground, because every
+   section below is dark content the wordmark would otherwise sit in. */
+.bt-masthead {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 150;                    /* over content, under the skip link's 400 */
+  padding: var(--bt-space-16) var(--bt-gutter);
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background 240ms ease, border-color 240ms ease;
+}
+
+.bt-masthead.is-landed {
+  background: rgba(12, 12, 12, 0.86);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  backdrop-filter: blur(10px) saturate(1.1);
+  border-bottom-color: var(--bt-hairline);
+}
+@supports not (backdrop-filter: blur(4px)) {
+  .bt-masthead.is-landed { background: rgba(12, 12, 12, 0.97); }
+}
+
+.bt-masthead__inner {
+  max-width: var(--bt-max);
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bt-space-16);
+}
+
+/* The supplied wordmark carries the mark and the name, so the drawn square
+   and the type treatment that stood in for it are both gone. Height-driven
+   so the intrinsic 500x74 can change without touching the layout. */
+.bt-logo {
+  display: block;
+  text-decoration: none;
+  line-height: 0;
+}
+.bt-logo img {
+  display: block;
+  height: 24px;
+  width: auto;
+}
+@media (min-width: 768px) {
+  .bt-logo img { height: 28px; }
+}
+
+/* The page's own ghost treatment at masthead scale. Colour, border and hover
+   all come from .bt-btn--ghost — this only resizes it and keeps the figures
+   aligned. A number that looks like a control gets dialled; a line of grey
+   text next to a logo does not. */
+.bt-masthead__tel {
+  font-size: 0.8125rem;
+  padding: 8px var(--bt-space-16);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 768px) {
+  .bt-masthead__tel { font-size: 0.875rem; padding: 9px var(--bt-space-24); }
+}
+
+/* =========================================================================
+   Motion
+   ========================================================================= */
+
+.bt-reveal {
+  opacity: 1;                              /* visible by default — motion enhances */
+  transition: opacity 520ms cubic-bezier(0.16, 1, 0.3, 1),
+              translate 520ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.js .bt-reveal:not(.is-in) { opacity: 0; translate: 0 18px; }
+.js .bt-reveal.is-in { opacity: 1; translate: 0 0; }
+
+.bt-playbtn {
+  position: absolute;
+  inset: 0;
+  display: none;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.4);
+  border: 0;
+  cursor: pointer;
+  z-index: 4;
+}
+.bt-playbtn span {
+  width: 64px; height: 64px; border-radius: 50%;
+  border: 2px solid var(--bt-white);
+  display: grid; place-items: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .js .bt-reveal:not(.is-in) { opacity: 1; translate: none; }
+  .bt-sticky { transition: none; }
+  .bt-playbtn { display: grid; }
+  /* the band holds still: no parallax travel, no pulse, no charge */
+  .js .bt-powerup[data-inview] .bt-powerup__glow,
+  .js .bt-powerup[data-inview] .bt-arrow__charge { animation: none !important; }
+  .bt-powerup__img { transform: none !important; }
+}

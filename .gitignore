@@ -1,0 +1,24 @@
+# Publish the FAB500HD landing page only.
+# Ignore everything, then allow the page and the assets it actually uses.
+/*
+!.gitignore
+!/mockup/
+/mockup/*
+!/mockup/index.html
+!/mockup/assets/
+/mockup/assets/*
+!/mockup/assets/css/
+/mockup/assets/css/*
+!/mockup/assets/css/fab500hd.css
+!/mockup/assets/js/
+/mockup/assets/js/*
+!/mockup/assets/js/fab500hd.js
+!/mockup/assets/fonts/
+!/mockup/assets/fab500hd/
+
+# Oversized / unused media (hero-insitu.mp4 is 218MB, over GitHub's 100MB limit)
+/mockup/assets/fab500hd/hero-insitu.mp4
+/mockup/assets/fab500hd/welder-background-image.png
+
+# Root redirect to the landing page
+!/index.html
