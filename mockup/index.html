@@ -61,7 +61,7 @@
     <a class="bt-logo" href="/" aria-label="BT Weld — home">
       <img src="assets/fab500hd/main-logo.png" alt="BT Weld" width="500" height="74" decoding="async">
     </a>
-    <a class="bt-btn bt-btn--ghost bt-masthead__tel" href="tel:+61287616500">+61 (2) 8761 6500</a>
+    <a class="bt-btn bt-masthead__cta" href="#book-demo" data-cta>Book a Demo</a>
   </div>
 </header>
 
@@ -83,7 +83,7 @@
     <div class="bt-wrap">
       <div class="bt-hero__copy">
         <h1 class="bt-display" id="hero-h">The Workshop<br><span class="bt-accent">Workhorse</span></h1>
-        <p class="bt-hero__sub">100% duty cycle at 500 amps. Five processes. One machine that doesn't stop when your schedule can't.</p>
+        <p class="bt-hero__sub">Fab 500 delivering 500amps at 100% duty cycle. Five processes. One machine.</p>
         <div class="bt-hero__actions">
           <a class="bt-btn" href="#book-demo" data-cta>Book a Demo</a>
           <a class="bt-btn bt-btn--ghost" href="assets/fab500hd/fab500hd-spec-sheet.pdf" target="_blank" rel="noopener">Download Spec Sheet</a>
@@ -201,7 +201,7 @@
             </article>
             <article class="bt-rail__card" data-rail-card>
               <span class="bt-rail__idx"><i class="bt-rail__led" aria-hidden="true"></i>03</span>
-              <h3 class="bt-rail__name">DC TIG (Lift Arc)</h3>
+              <h3 class="bt-rail__name">DC TIG (Scratch Start)</h3>
               <p class="bt-rail__cap">Clean, controlled starts for precision-critical joints.</p>
             </article>
             <article class="bt-rail__card" data-rail-card>
@@ -250,7 +250,7 @@
   <div class="bt-wrap bt-fit">
     <div class="bt-reveal bt-fit">
       <h2 class="bt-h2" id="eng-h">Built to <span class="bt-accent">Run.</span> Built to <span class="bt-accent">Last.</span></h2>
-      <p class="bt-body" style="margin-top: 24px; color: var(--bt-silver)">Endurance isn't a setting. It's the inverter, the drive system, the cables and the terminals. Every component built for a workshop that never gets a quiet day.</p>
+      <p class="bt-body" style="margin-top: 24px; color: var(--bt-silver)">With FAB 500 endurance isn't a setting, it's what's inside the case &mdash; the inverter, the cooling, the cables and the terminals. Every component built for a workshop that never gets a quiet day.</p>
     </div>
 
     <div class="bt-feats">
@@ -276,27 +276,7 @@
       </article>
     </div>
 
-    <!-- Rating plate — the page's one summary strip, and the download's home. -->
-    <div class="bt-plate bt-reveal">
-      <div class="bt-plate__head">
-        <h3 class="bt-plate__title">FAB 500HD</h3>
-        <p class="bt-plate__ids"><span>659500 Air</span><span>659510 Water</span></p>
-      </div>
-
-      <ul class="bt-plate__list">
-        <li class="bt-plate__item">3 Phase <b>415V</b></li>
-        <li class="bt-plate__item"><b>100%</b> duty cycle @ <b>500A</b></li>
-        <li class="bt-plate__item">Current range <b>30&ndash;500A</b></li>
-        <li class="bt-plate__item">Wire <b>0.6&ndash;2.4mm</b></li>
-        <li class="bt-plate__item">Electrode <b>1.6&ndash;5mm</b></li>
-        <li class="bt-plate__item">Max <b>30mm</b> plate</li>
-        <li class="bt-plate__item">Suits <b>D200 &amp; D300</b> spools</li>
-        <li class="bt-plate__item"><b>32 Kva</b> generator compatible</li>
-        <li class="bt-plate__item"><b>IP21S</b></li>
-        <li class="bt-plate__item"><b>83kg</b></li>
-      </ul>
-
-      <div class="bt-plate__dls">
+    <div class="bt-plate__dls bt-reveal">
         <a class="bt-btn bt-btn--block" href="assets/fab500hd/fab500hd-air-spec-sheet.pdf" target="_blank" rel="noopener">
           <svg class="bt-btn__i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 20h16"/>
@@ -309,7 +289,6 @@
           </svg>
           Download Spec Sheet (Water)
         </a>
-      </div>
     </div>
   </div>
 </section>
@@ -391,84 +370,30 @@
         <form id="demo-form" novalidate>
           <div class="bt-fieldrow">
             <div class="bt-field">
-              <label class="bt-field__label" for="f-name">Full Name</label>
+              <label class="bt-field__label" for="f-name">Name</label>
               <input class="bt-input" id="f-name" name="name" type="text" autocomplete="name" required>
-              <p class="bt-field__err"><b>Required</b> — enter your name.</p>
+              <p class="bt-field__err"><b>Required</b> &mdash; enter your name.</p>
             </div>
-            <div class="bt-field">
-              <label class="bt-field__label" for="f-company">Company or Workplace</label>
-              <input class="bt-input" id="f-company" name="company" type="text" autocomplete="organization" required>
-              <p class="bt-field__err"><b>Required</b> — enter your company or workplace.</p>
-            </div>
-          </div>
-
-          <div class="bt-fieldrow">
             <div class="bt-field">
               <label class="bt-field__label" for="f-email">Email</label>
               <input class="bt-input" id="f-email" name="email" type="email" autocomplete="email" inputmode="email" required>
-              <p class="bt-field__err"><b>Check this</b> — enter a valid email address.</p>
+              <p class="bt-field__err"><b>Check this</b> &mdash; enter a valid email address.</p>
             </div>
+          </div>
+
+          <div class="bt-fieldrow">
             <div class="bt-field">
               <label class="bt-field__label" for="f-phone">Phone Number</label>
               <input class="bt-input" id="f-phone" name="phone" type="tel" autocomplete="tel" required>
-              <p class="bt-field__err"><b>Check this</b> — enter a valid phone number.</p>
-            </div>
-          </div>
-
-          <div class="bt-field">
-            <label class="bt-field__label" for="f-address">Business or workplace address</label>
-            <input class="bt-input" id="f-address" name="address" type="text" autocomplete="street-address" placeholder="Street, suburb, state" required>
-            <p class="bt-field__err"><b>Required</b> — enter your business or workplace address.</p>
-          </div>
-
-          <div class="bt-field" role="radiogroup" aria-labelledby="setup-l">
-            <p class="bt-field__label" id="setup-l">Air or water cooled?</p>
-            <div class="bt-choices bt-choices--inline">
-              <label class="bt-choice"><input type="radio" name="cooling" value="Air cooled" required><span>Air cooled</span></label>
-              <label class="bt-choice"><input type="radio" name="cooling" value="Water cooled"><span>Water cooled</span></label>
-              <label class="bt-choice"><input type="radio" name="cooling" value="Not sure yet"><span>Not sure yet</span></label>
-            </div>
-            <p class="bt-field__err"><b>Required</b> — pick one, or tell us you are not sure.</p>
-          </div>
-
-          <div class="bt-field" role="radiogroup" aria-labelledby="situation-l">
-            <p class="bt-field__label" id="situation-l">What best describes your situation?</p>
-            <div class="bt-choices">
-              <label class="bt-choice"><input type="radio" name="situation" value="Supply Store" required><span>Supply Store</span></label>
-              <label class="bt-choice"><input type="radio" name="situation" value="Welder or Fabricator"><span>Welder or Fabricator</span></label>
-              <label class="bt-choice"><input type="radio" name="situation" value="Existing Dynaweld Reseller"><span>Existing Dynaweld Reseller</span></label>
-              <label class="bt-choice"><input type="radio" name="situation" value="Other"><span>Other</span></label>
-            </div>
-            <p class="bt-field__err"><b>Required</b> — choose the one that fits.</p>
-          </div>
-
-          <div class="bt-fieldrow">
-            <div class="bt-field">
-              <label class="bt-field__label" for="f-employees">Number of employees <span class="bt-field__opt">(optional)</span></label>
-              <input class="bt-input" id="f-employees" name="employees" type="number" min="1" step="1" inputmode="numeric">
+              <p class="bt-field__err"><b>Check this</b> &mdash; enter a valid phone number.</p>
             </div>
             <div class="bt-field">
-              <label class="bt-field__label" for="f-stores">Number of stores <span class="bt-field__opt">(optional)</span></label>
-              <input class="bt-input" id="f-stores" name="stores" type="number" min="1" step="1" inputmode="numeric">
+              <label class="bt-field__label" for="f-city">City/Suburb</label>
+              <input class="bt-input" id="f-city" name="city" type="text" autocomplete="address-level2" required>
+              <p class="bt-field__err"><b>Required</b> &mdash; enter your city or suburb.</p>
             </div>
           </div>
 
-          <div class="bt-fieldrow">
-            <div class="bt-field">
-              <label class="bt-field__label" for="f-website">Website <span class="bt-field__opt">(optional)</span></label>
-              <input class="bt-input" id="f-website" name="website_url" type="url" autocomplete="url" inputmode="url">
-              <p class="bt-field__err"><b>Check this</b> — enter a valid web address.</p>
-            </div>
-            <div class="bt-field">
-              <label class="bt-field__label" for="f-date">Ideal date for demonstration <span class="bt-field__opt">(optional)</span></label>
-              <input class="bt-input" id="f-date" name="demo_date" type="date">
-            </div>
-          </div>
-
-          <label class="bt-check">
-            <input type="checkbox" id="f-optout" name="no_marketing" value="yes">
-            <span>Tick if you do not wish to be contacted in the future about any promotion or product launches.</span>
-          </label>
 
           <div class="bt-hp" aria-hidden="true">
             <label for="f-hp">Leave this field empty</label>

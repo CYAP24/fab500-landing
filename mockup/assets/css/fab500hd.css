@@ -684,7 +684,15 @@ a { color: var(--bt-green); text-underline-offset: 0.2em; text-decoration-thickn
 
      svh, not vh: mobile browser chrome would otherwise push the foot of the
      composition under the fold. */
-  .bt-mp { --bt-mp-vid-h: 40svh; }
+  .bt-mp {
+    --bt-mp-vid-h: 40svh;
+    /* The pin's window is the whole viewport, so any height the composition
+       does not use shows as a dead band under a finished progress bar. The
+       rail takes that slack back; the runway comes down with it so the
+       sequence is not longer than it needs to be for six cards. */
+    --bt-mp-runway-m: 120vh;
+    --bt-rail-h: clamp(200px, 43svh, 470px);
+  }
 
   .bt-mp[data-pinned] {
     height: calc(100svh + var(--bt-mp-vid-h) + var(--bt-mp-runway-m, 160vh));
@@ -694,7 +702,10 @@ a { color: var(--bt-green); text-underline-offset: 0.2em; text-decoration-thickn
     position: sticky;
     top: calc(-1 * var(--bt-mp-vid-h));   /* the band rides up out of frame */
     height: calc(100svh + var(--bt-mp-vid-h));
-    padding-block: 0 var(--bt-space-16);
+    /* The booking bar floats over the foot of the pinned frame. Without its
+       height reserved here the bead - the one thing that reports progress -
+       lands underneath it and the rail's last rows go with it. */
+    padding-block: 0 calc(var(--bt-sticky-h, 0px) + var(--bt-space-16));
   }
 
   /* the stage stops being an overlay and becomes the band itself */
@@ -739,6 +750,23 @@ a { color: var(--bt-green); text-underline-offset: 0.2em; text-decoration-thickn
      positioned, and static would hand them .bt-rail as a containing block,
      which paints the bead as a full-height column across the cards. */
   .bt-mp[data-pinned] .bt-seam-h { position: relative; bottom: auto; margin-top: var(--bt-space-24); }
+
+  /* The rail takes whatever height is left once the headline, the body and
+     the reserved booking-bar strip have had theirs, instead of guessing with
+     a fixed svh fraction. The fraction held at 812px tall and overran the bar
+     at 640px, which buried the bead - the one element reporting progress. */
+  .bt-mp[data-pinned] .bt-mp__pin { display: flex; flex-direction: column; }
+  .bt-mp[data-pinned] .bt-mp__stage { flex: 0 0 auto; }
+  .bt-mp[data-pinned] .bt-mp__inner,
+  .bt-mp[data-pinned] .bt-mp__copy,
+  .bt-mp[data-pinned] .bt-rail {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;        /* without this a flex item refuses to shrink past its content */
+  }
+  .bt-mp[data-pinned] .bt-rail__viewport { flex: 1 1 auto; height: auto; min-height: 120px; }
+  .bt-mp[data-pinned] .bt-seam-h { flex: 0 0 auto; }
 }
 
 .bt-seam-h {
@@ -2419,7 +2447,7 @@ a.bt-contact__text:focus-visible { outline: 2px solid var(--bt-green); outline-o
    all come from .bt-btn--ghost — this only resizes it and keeps the figures
    aligned. A number that looks like a control gets dialled; a line of grey
    text next to a logo does not. */
-.bt-masthead__tel {
+.bt-masthead__cta {
   font-size: 0.8125rem;
   padding: 8px var(--bt-space-16);
   white-space: nowrap;
@@ -2427,7 +2455,7 @@ a.bt-contact__text:focus-visible { outline: 2px solid var(--bt-green); outline-o
 }
 
 @media (min-width: 768px) {
-  .bt-masthead__tel { font-size: 0.875rem; padding: 9px var(--bt-space-24); }
+  .bt-masthead__cta { font-size: 0.875rem; padding: 9px var(--bt-space-24); }
 }
 
 /* =========================================================================
